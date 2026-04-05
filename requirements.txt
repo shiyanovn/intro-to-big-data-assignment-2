@@ -1,0 +1,4 @@
+pyspark==3.5.0
+cassandra-driver==3.29.1
+pyarrow==14.0.1
+numpy<2

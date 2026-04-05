@@ -1,0 +1,45 @@
+services:
+  master:
+    build: .
+    container_name: master
+    hostname: master
+    ports:
+      - "9870:9870"
+      - "8088:8088"
+      - "4040:4040"
+      - "9042:9042"
+      - "18080:18080"
+    volumes:
+      - ./app:/app
+      - ./data:/data
+      - ./start-services.sh:/start-services.sh
+      - ./app.sh:/app.sh
+      - ./requirements.txt:/requirements.txt
+    environment:
+      - NODE_TYPE=master
+    networks:
+      hadoop_net:
+        ipv4_address: 172.28.0.2
+    command: >
+      bash -c "bash /start-services.sh && bash /app.sh && tail -f /dev/null"
+
+  slave1:
+    build: .
+    container_name: slave1
+    hostname: slave1
+    volumes:
+      - ./start-services.sh:/start-services.sh
+    environment:
+      - NODE_TYPE=slave
+    networks:
+      hadoop_net:
+        ipv4_address: 172.28.0.3
+    command: >
+      bash -c "bash /start-services.sh && tail -f /dev/null"
+
+networks:
+  hadoop_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
